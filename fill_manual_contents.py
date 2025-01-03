@@ -97,16 +97,23 @@ def main():
                 title = md_file.stem  # 파일명에서 확장자 제거
                 print(f"소단원 제목: {title}")
 
-                # 내용 생성
-                content = generate_content(cursor_rules_content, knowledge_content, title)
+                # 파일 내용 확인 (비어 있는지 여부)
+                with open(md_file, 'r', encoding='utf-8') as f:
+                    content = f.read().strip()
 
-                if content:
-                    # .md 파일에 내용 작성
-                    with open(md_file, 'w', encoding='utf-8') as f:
-                        f.write(content)
-                    print(f"내용이 성공적으로 '{md_file}'에 작성되었습니다.")
+                # 파일이 비어 있는 경우에만 내용 생성
+                if not content:
+                    content = generate_content(cursor_rules_content, knowledge_content, title)
+
+                    if content:
+                        # .md 파일에 내용 작성
+                        with open(md_file, 'w', encoding='utf-8') as f:
+                            f.write(content)
+                        print(f"내용이 성공적으로 '{md_file}'에 작성되었습니다.")
+                    else:
+                        print(f"내용 생성 실패: '{md_file}'")
                 else:
-                    print(f"내용 생성 실패: '{md_file}'")
+                    print(f"파일 '{md_file}'은 비어 있지 않으므로 건너뜁니다.")
 
                 # API 호출 간 간격 두기 (필요 시)
                 time.sleep(1)  # 1초 대기
